@@ -97,12 +97,12 @@ apt-get install -y \
   ruby-dev
 
 # Use system's user permissions
-echo "gem: --user-install" >> ~/.gemrc
+runuser -l $USERNAME -c "echo 'gem: --user-install' >> ~/.gemrc"
 
 # Install Go
 apt-get install -y \
   golang-go \
-&& runuser -l $USERNAME -c  'mkdir -p ${GOPATH}/{src,pkg,bin}'
+&& runuser -l $USERNAME -c "mkdir -p ${GOPATH}/{src,pkg,bin}"
 
 # Install dep
 curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh \
@@ -163,21 +163,21 @@ TERRAFORM_URL="https://releases.hashicorp.com${TERRAFORM_VERSION}_linux_amd64.zi
 )
 
 # Install terraform-docs
-runuser -l $USERNAME -c 'go get github.com/segmentio/terraform-docs' \
+runuser -l $USERNAME -c "go get github.com/segmentio/terraform-docs" \
 && mv $GOPATH/bin/terraform-docs /usr/local/bin
 
 # Install terraforming, landscape and github_changelog_generator
-runuser -l $USERNAME -c 'gem install \
+runuser -l $USERNAME -c "gem install \
   terraforming \
   terraform_landscape \
-  github_changelog_generator'
+  github_changelog_generator"
 
 # Install vegeta
-runuser -l $USERNAME -c 'go get -u github.com/tsenart/vegeta' \
+runuser -l $USERNAME -c "go get -u github.com/tsenart/vegeta" \
 && mv $GOPATH/bin/vegeta /usr/local/bin
 
 # Install heptio
-runuser -l $USERNAME -c 'go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator' \
+runuser -l $USERNAME -c "go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator" \
 && mv $GOPATH/bin/aws-iam-authenticator /usr/local/bin/heptio-authenticator-aws
 
 # Install gcloud
@@ -187,11 +187,11 @@ echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /e
 && apt-get -y install google-cloud-sdk
 
 # Install awscli, ansible, virtualenvwarpper
-runuser -l $USERNAME -c 'pip install \
+runuser -l $USERNAME -c "pip install \
   awscli \
   ansible \
-  virtualenvwrapper' \
-&& runuser -l $USERNAME -c 'source virtualenvwrapper.sh'
+  virtualenvwrapper" \
+&& runuser -l $USERNAME -c "source virtualenvwrapper.sh"
 
 # Install awless
 curl https://raw.githubusercontent.com/wallix/awless/master/getawless.sh | bash \
