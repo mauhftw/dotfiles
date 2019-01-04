@@ -1,0 +1,214 @@
+# This script is intended to be used
+# for setting up the most important applications
+# to start working relaxed =D
+
+#!/usr/bin/env bash
+
+set -ex
+
+#############
+## Variables
+#############
+
+CUSTOM_BASHRC_PATH="~/"
+GOPATH="~/go/projects"
+CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+
+
+# Checking if script is running as root
+if [ $UID -ne 0 ]; then
+	echo "You must run this script as root..."
+	exit 1
+fi
+
+####################################
+# System utilities and dependencies
+####################################
+
+apt-get update && apt-get install -y \
+  htop \
+  curl \
+  jq \
+  unzip \
+  git \
+  nmap \
+  tig \
+  tmux \
+  progress \
+  vim \
+  apt-transport-https \
+  libxss1 \
+  libappindicator1 \
+  libindicator7 \
+  python-pip \
+  ca-certificates \
+  software-properties-common \
+  docky
+
+########################
+## Desktop applications
+########################
+
+# Install sublime
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - \
+&& echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list \
+&& sudo apt-get update \
+&& apt-get install -y sublime-text
+
+# Install zoom
+(
+	cd /tmp \
+  && wget https://zoom.us/client/latest/zoom_amd64.deb -O zoom.deb \
+  && dpkg -i zoom.deb \
+  && sudo apt-get -f install
+)
+
+# Install ulauncher
+(
+	ULAUNCHER_RELEASE=$(curl --silent "https://api.github.com/repos/Ulauncher/Ulauncher/releases/latest" | jq .tag_name -r)
+	cd /tmp \
+  && wget https://github.com/Ulauncher/Ulauncher/releases/download/${ULAUNCHER_RELEASE}/ulauncher_${ULAUNCHER_RELEASE}_all.deb -O ulauncher.deb \
+  && sudo dpkg -i ulauncher.deb \
+  && sudo apt-get install -f
+)
+
+# Install etcher
+(
+	ETCHER_RELEASE=$(curl --silent "https://api.github.com/repos/balena-io/etcher/releases/latest" | jq .tag_name -r | tr -d 'v')
+	cd /tmp \
+  && wget https://github.com/balena-io/etcher/releases/download/v${ETCHER_RELEASE}/balena-etcher-electron-${ETCHER_RELEASE}-linux-x64.zip -O etcher.zip \
+  && unzip etcher.zip \
+  && mv balena-etcher-electron-${ETCHER_RELASE}-x86_64.AppImage* /usr/local/bin/etcher
+)
+
+# Install google chrome
+(
+  cd /tmp \
+  && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O chrome.deb \
+  && sudo apt install ./chrome.deb \
+  && sudo apt-get install -f.
+)
+
+#################################################
+## Programming languages and dependency managers
+#################################################
+
+# Install Ruby
+apt-get install -y \
+  ruby
+  ruby-dev
+
+# Use system's user permissions
+echo "gem: --user-install" >> ~/.gemrc
+
+
+# Install Go
+apt-get install -y \
+  golang-go \
+&& mkdir -p ${GOPATH}/{src,pkg,bin}
+
+# Install dep
+curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh \
+&& sudo mv $GOPATH/bin/dep /usr/local/bin
+
+
+#########################
+## DevOps tools
+#########################
+
+# Install docker
+apt-get remove \
+  docker \
+  docker-engine \
+  docker.io \
+
+&& curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - \
+&& sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable" \
+
+&& sudo apt-get update \
+&& sudo apt-get install -y \
+     docker-ce \
+     docker-compose \
+&& sudo usermod -aG docker $USER
+
+# Install eksctl
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp \
+&& sudo mv /tmp/eksctl /usr/local/bin
+
+# Install kubectl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
+&& echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list \
+&& sudo apt-get update \
+&& sudo apt-get install -y kubectl
+
+# Install kubetpl
+curl -sSL https://github.com/shyiko/kubetpl/releases/download/0.8.0/kubetpl-0.8.0-$(
+bash -c '[[ $OSTYPE == darwin* ]] && echo darwin || echo linux'
+  )-amd64 -o kubetpl
+&& chmod a+x kubetpl
+&& sudo mv kubetpl /usr/local/bin/
+
+# Install terraform
+# function to get latest terraform's version
+terraform_version() {
+  local version
+  version=$(curl https://releases.hashicorp.com/terraform/ | grep terraform | egrep -iv "alpha|beta" | tr -d '<>="' | awk '{print $2}' | awk -F "href" '{print $2}' | awk -F "/a" '{print $1}' | head -n 1)
+  echo $version
+}
+
+(
+TERRAFORM_VERSION=$(terraform_version)
+TERRAFORM_URL="https://releases.hashicorp.com${TERRAFORM_VERSION}_linux_amd64.zip"
+  cd /tmp \
+  && curl -s ${TERRAFORM_URL} -O terraform.zip \
+  && unzip terraform.zip \
+  && mv terraform /usr/local/bin/
+)
+
+# Install terraform-docs
+go get github.com/segmentio/terraform-docs \
+&& mv $GOPATH/bin/terraform-docs /usr/local/bin
+
+# Install terraforming, landscape and github_changelog_generator
+gem install \
+  terraforming \
+  terraform_landscape \
+  github_changelog_generator
+
+# Install vegeta
+go get -u github.com/tsenart/vegeta \
+&& mv $GOPATH/bin/vegeta /usr/local/bin
+
+# Install heptio
+go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator \
+&& mv $GOPATH/bin/aws-iam-authenticator /usr/local/bin/heptio-authenticator-aws
+
+# Install gcloud
+echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
+&& curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - \
+&& sudo apt-get update \
+&& sudo apt-get -y install google-cloud-sdk
+
+# Install awscli, ansible, virtualenvwarpper
+pip install \
+  awscli \
+  ansible \
+  virtualenvwrapper \
+&& source $(which virtualenvwrapper)
+
+# Install awless
+curl https://raw.githubusercontent.com/wallix/awless/master/getawless.sh | bash \
+&& sudo mv awless /usr/local/bin/
+
+###########################
+## Cleaning out everything
+###########################
+rm -rf /tmp/*
+
+#######################
+## Load .custom_bashrc
+#######################
+source $CUSTOM_BASHRC_PATH/.custom_bashrc
