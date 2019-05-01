@@ -13,9 +13,8 @@ fi
 ## Variables
 #############
 
-readonly USERNAME="mauh"
-readonly CUSTOM_BASHRC_PATH="/home/${USERNAME}"
-readonly GOPATH="/home/${USERNAME}/go"
+readonly CUSTOM_BASHRC_PATH="${HOME}/dotfiles"
+readonly GOPATH="${HOME}/go"
 readonly CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
 
 
@@ -97,17 +96,22 @@ apt-get install -y \
   ruby-dev
 
 # Use system's user permissions
-runuser -l $USERNAME -c "echo 'gem: --user-install' >> ~/.gemrc"
+runuser -l $USER -c "echo 'gem: --user-install' >> ~/.gemrc"
 
 # Install Go
 apt-get install -y \
   golang-go \
-&& runuser -l $USERNAME -c "mkdir -p ${GOPATH}/{src,pkg,bin}"
+&& runuser -l $USER -c "mkdir -p ${GOPATH}/{src,pkg,bin}"
 
 # Install dep
-runuser -l $USERNAME -c "curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh" \
+runuser -l $USER -c "curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh" \
 && mv $GOPATH/bin/dep /usr/local/bin
 
+# Install brew
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+$ echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/:$PATH"' >>~/.bashrc
+$ echo 'export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"' >>~/.bashrc
+$ echo 'export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"' >>~/.bashrc
 
 #########################
 ## DevOps tools
@@ -127,7 +131,7 @@ apt-get remove \
 && apt-get install -y \
      docker-ce \
      docker-compose \
-&& usermod -aG docker $USERNAME
+&& usermod -aG docker $USER
 
 # Install eksctl
 curl --silent --show-error --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp \
@@ -144,6 +148,9 @@ curl --silent --show-error --location https://github.com/shyiko/kubetpl/releases
 bash -c '[[ $OSTYPE == darwin* ]] && echo darwin || echo linux')-amd64 -o kubetpl \
 && chmod a+x kubetpl \
 && mv kubetpl /usr/local/bin/
+
+# Install kube-ps1, kubectx. kubetail, kubenvs (check installing with brew)
+
 
 # Install terraform
 # function to get latest terraform's version
@@ -163,21 +170,21 @@ TERRAFORM_URL="https://releases.hashicorp.com${TERRAFORM_VERSION}_linux_amd64.zi
 )
 
 # Install terraform-docs
-runuser -l $USERNAME -c "go get github.com/segmentio/terraform-docs" \
+runuser -l $USER -c "go get github.com/segmentio/terraform-docs" \
 && mv $GOPATH/bin/terraform-docs /usr/local/bin
 
 # Install terraforming, landscape and github_changelog_generator
-runuser -l $USERNAME -c "gem install \
+runuser -l $USER -c "gem install \
   terraforming \
   terraform_landscape \
   github_changelog_generator"
 
 # Install vegeta
-runuser -l $USERNAME -c "go get -u github.com/tsenart/vegeta" \
+runuser -l $USER -c "go get -u github.com/tsenart/vegeta" \
 && mv $GOPATH/bin/vegeta /usr/local/bin
 
 # Install heptio
-runuser -l $USERNAME -c "go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator" \
+runuser -l $USER -c "go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator" \
 && mv $GOPATH/bin/aws-iam-authenticator /usr/local/bin/heptio-authenticator-aws
 
 # Install gcloud
@@ -187,11 +194,11 @@ echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /e
 && apt-get -y install google-cloud-sdk
 
 # Install awscli, ansible, virtualenvwarpper
-runuser -l $USERNAME -c "pip install \
+runuser -l $USER -c "pip install \
   awscli \
   ansible \
   virtualenvwrapper" \
-&& runuser -l $USERNAME -c "source virtualenvwrapper.sh"
+&& runuser -l $USER -c "source virtualenvwrapper.sh"
 
 # Install awless
 curl https://raw.githubusercontent.com/wallix/awless/master/getawless.sh | bash \
@@ -205,4 +212,8 @@ rm -rf /tmp/*
 #######################
 ## Load .custom_bashrc
 #######################
-source $CUSTOM_BASHRC_PATH/.custom_bashrc
+if ! grep -w '.custom_bashrc' ${HOME}/.bashrc; then
+  echo "source ${CUSTOM_BASHRC_PATH}/.custom_bashrc" >> ${HOME}/.bashrc
+fi
+
+source ${HOME}/.bashrc

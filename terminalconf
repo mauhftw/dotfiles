@@ -1,0 +1,21 @@
+#Written by MATE Terminal 1.20.0
+
+[MATE Terminal Configuration]
+Version=1
+CompatVersion=1
+Windows=Window0;
+
+[Window0]
+MenubarVisible=true
+Role=mate-terminal-window-28252--420190630-1546549228
+Maximized=true
+ActiveTerminal=Terminal0x5599217e8460
+Geometry=213x53+0+28
+Terminals=Terminal0x5599217e8460;
+
+[Terminal0x5599217e8460]
+ProfileID=default
+WorkingDirectory=/home/mauh
+Zoom=1
+Width=213
+Height=53
