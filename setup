@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 # Checks if script is running as root
 if [ $UID -ne 0 ]; then
@@ -13,6 +13,7 @@ fi
 ## Variables
 #############
 
+readonly USERNAME="mauh"
 readonly CUSTOM_BASHRC_PATH="${HOME}/dotfiles"
 readonly GOPATH="${HOME}/go"
 readonly CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
@@ -22,7 +23,10 @@ readonly CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
 # System utilities and dependencies
 ####################################
 
-apt-get update && apt-get install -y \
+add-apt-repository ppa:teejee2008/ppa \
+&& add-apt-repository ppa:thopiekar/sierrabreeze \
+&& apt-get update \
+&& apt-get install -y \
   htop \
   curl \
   jq \
@@ -33,13 +37,16 @@ apt-get update && apt-get install -y \
   tmux \
   progress \
   vim \
+  latte-dock \
   apt-transport-https \
   libxss1 \
   libappindicator1 \
+  ukuu \ubun
   libindicator7 \
   python-pip \
   ca-certificates \
   software-properties-common \
+  sierrabreeze \
   docky
 
 ########################
@@ -51,6 +58,12 @@ wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | apt-key add - \
 && echo "deb https://download.sublimetext.com/ apt/stable/" | tee /etc/apt/sources.list.d/sublime-text.list \
 && apt-get update \
 && apt-get install -y sublime-text
+
+# Install slack
+(
+wget https://downloads.slack-edge.com/linux_releases/slack-desktop-3.3.8-amd64.deb -O /tmp/slack.deb
+apt-get install /tmp/slack.deb
+)
 
 # Install zoom
 (
@@ -75,7 +88,7 @@ wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | apt-key add - \
 	cd /tmp \
   && wget https://github.com/balena-io/etcher/releases/download/v${ETCHER_RELEASE}/balena-etcher-electron-${ETCHER_RELEASE}-linux-x64.zip -O etcher.zip \
   && unzip etcher.zip \
-  && mv balena-etcher-electron-${ETCHER_RELEASE}-x86_64.AppImage* /usr/local/bin/etcher
+  && mv balena* /usr/local/bin/etcher
 )
 
 # Install google chrome
@@ -96,22 +109,20 @@ apt-get install -y \
   ruby-dev
 
 # Use system's user permissions
-runuser -l $USER -c "echo 'gem: --user-install' >> ~/.gemrc"
+runuser -l $USERNAME -c "echo 'gem: --user-install' >> ~/.gemrc"
 
 # Install Go
 apt-get install -y \
   golang-go \
-&& runuser -l $USER -c "mkdir -p ${GOPATH}/{src,pkg,bin}"
+&& runuser -l $USERNAME -c "mkdir -p ${GOPATH}/{src,pkg,bin}"
 
 # Install dep
-runuser -l $USER -c "curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh" \
+runuser -l $USERNAME -c "curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh" \
 && mv $GOPATH/bin/dep /usr/local/bin
 
 # Install brew
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
-$ echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/:$PATH"' >>~/.bashrc
-$ echo 'export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"' >>~/.bashrc
-$ echo 'export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"' >>~/.bashrc
+runuser -l $USERNAME -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+
 
 #########################
 ## DevOps tools
@@ -131,7 +142,7 @@ apt-get remove \
 && apt-get install -y \
      docker-ce \
      docker-compose \
-&& usermod -aG docker $USER
+&& usermod -aG docker $USERNAME
 
 # Install eksctl
 curl --silent --show-error --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp \
@@ -150,7 +161,8 @@ bash -c '[[ $OSTYPE == darwin* ]] && echo darwin || echo linux')-amd64 -o kubetp
 && mv kubetpl /usr/local/bin/
 
 # Install kube-ps1, kubectx. kubetail, kubenvs (check installing with brew)
-
+brew update
+brew install stern kubectx kubectx-ps1
 
 # Install terraform
 # function to get latest terraform's version
@@ -170,21 +182,21 @@ TERRAFORM_URL="https://releases.hashicorp.com${TERRAFORM_VERSION}_linux_amd64.zi
 )
 
 # Install terraform-docs
-runuser -l $USER -c "go get github.com/segmentio/terraform-docs" \
+runuser -l $USERNAME -c "go get github.com/segmentio/terraform-docs" \
 && mv $GOPATH/bin/terraform-docs /usr/local/bin
 
 # Install terraforming, landscape and github_changelog_generator
-runuser -l $USER -c "gem install \
+runuser -l $USERNAME -c "gem install \
   terraforming \
   terraform_landscape \
   github_changelog_generator"
 
 # Install vegeta
-runuser -l $USER -c "go get -u github.com/tsenart/vegeta" \
+runuser -l $USERNAME -c "go get -u github.com/tsenart/vegeta" \
 && mv $GOPATH/bin/vegeta /usr/local/bin
 
 # Install heptio
-runuser -l $USER -c "go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator" \
+runuser -l $USERNAME -c "go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator" \
 && mv $GOPATH/bin/aws-iam-authenticator /usr/local/bin/heptio-authenticator-aws
 
 # Install gcloud
@@ -194,11 +206,11 @@ echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /e
 && apt-get -y install google-cloud-sdk
 
 # Install awscli, ansible, virtualenvwarpper
-runuser -l $USER -c "pip install \
+runuser -l $USERNAME -c "pip install \
   awscli \
   ansible \
   virtualenvwrapper" \
-&& runuser -l $USER -c "source virtualenvwrapper.sh"
+&& runuser -l $USERNAME -c "source virtualenvwrapper.sh"
 
 # Install awless
 curl https://raw.githubusercontent.com/wallix/awless/master/getawless.sh | bash \
@@ -207,11 +219,13 @@ curl https://raw.githubusercontent.com/wallix/awless/master/getawless.sh | bash 
 ###########################
 ## Cleaning out everything
 ###########################
+
 rm -rf /tmp/*
 
 #######################
 ## Load .custom_bashrc
 #######################
+
 if ! grep -w '.custom_bashrc' ${HOME}/.bashrc; then
   echo "source ${CUSTOM_BASHRC_PATH}/.custom_bashrc" >> ${HOME}/.bashrc
 fi

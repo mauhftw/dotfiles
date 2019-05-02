@@ -36,7 +36,7 @@ export KUBE_PS1_SYMBOL_USE_IMG=true
 export KUBECONFIG=$KUBECONFIG:~/.kube/kubeconfig_terraform-k8s
 
 # Source env vars for completion and ps1
-source ~/kube-ps1/kube-ps1.sh
+source "/home/linuxbrew/.linuxbrew/opt/kube-ps1/share/kube-ps1.sh"
 source virtualenvwrapper.sh
 source <(kubectl completion bash)
 source <(awless completion bash)
