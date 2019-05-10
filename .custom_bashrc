@@ -2,22 +2,26 @@
 
 # Show git branch in CLI
 parse_git_branch() {
-	 git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
 }
 
 # Use XTERM-256colors
 TERM=xterm-256color
 PS1="\[$(tput bold)\]"
-PS1+="\[$(tput setaf 45)\]\u"
+if [ $UID -ne 0 ]; then 
+  PS1+="\[$(tput setaf 45)\]\u"
+else
+  PS1+="\[$(tput setaf 198)\]\u"
+fi
 PS1+="\[$(tput setaf 15)\]@"
 PS1+="\[$(tput setaf 50)\]\h:"
 PS1+="\[$(tput setaf 15)\]\$(kube_ps1) "
 PS1+="\[$(tput setaf 141)\]\w"
 PS1+="\[$(tput setaf 15)\] on "
-PS1+="\[$(tput setaf 209)\]\$(parse_git_branch)"
+PS1+="\[$(tput setaf 198)\]\$(parse_git_branch)"
 PS1+="\[$(tput setaf 15)\] at "
-PS1+="\[$(tput setaf 220)\]\t\n"
-PS1+="\[$(tput setaf 15 && tput bold)\] \$ "
+PS1+="\[$(tput setaf 168)\]\t\n"
+PS1+="\[$(tput setaf 15 && tput bold)\]-> "
 
 # Environment variables
 export LC_ALL="en_US.UTF-8"
@@ -36,12 +40,17 @@ export KUBE_PS1_SYMBOL_USE_IMG=true
 export KUBECONFIG=$KUBECONFIG:~/.kube/kubeconfig_terraform-k8s
 
 # Source env vars for completion and ps1
+if [ $UID -ne 0 ]; then
+  source virtualenvwrapper.sh
+  source ~/dotfiles/kctl_completion
+fi
 source "/home/linuxbrew/.linuxbrew/opt/kube-ps1/share/kube-ps1.sh"
-source virtualenvwrapper.sh
 source <(kubectl completion bash)
 source <(awless completion bash)
 
 # Alias
+alias kctl="kubectl"
+alias kenv="kubens"
 alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias xclip="xclip -se c"
 alias ..="cd .."

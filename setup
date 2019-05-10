@@ -222,6 +222,15 @@ curl https://raw.githubusercontent.com/wallix/awless/master/getawless.sh | bash 
 
 rm -rf /tmp/*
 
+##########################
+## Checking if you're using plasmashell
+##########################
+
+if hash plasmashell; then
+  echo "Adding pieceoff command!"
+  ln -s ~/dotfiles/kubuntu/graphics_reset.sh /usr/local/bin/pieceoff
+fi
+
 #######################
 ## Load .custom_bashrc
 #######################
