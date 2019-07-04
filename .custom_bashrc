@@ -5,6 +5,11 @@ parse_git_branch() {
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
 }
 
+parse_terraform_workspace() {
+  TF_WORKSPACE=$(terraform workspace list 2> /dev/null | grep '*' | cut -d '*' -f2- | tr -d ' ')
+  echo "$(tput setaf 15)TF:$(tput setaf 198)${TF_WORKSPACE}" | sed 's/\(.*\)/[\1]/'
+}
+
 # Use XTERM-256colors
 TERM=xterm-256color
 PS1="\[$(tput bold)\]"
@@ -16,6 +21,7 @@ fi
 PS1+="\[$(tput setaf 15)\]@"
 PS1+="\[$(tput setaf 50)\]\h:"
 PS1+="\[$(tput setaf 15)\]\$(kube_ps1) "
+PS1+="\[$(tput setaf 198)\]\$(parse_terraform_workspace) "
 PS1+="\[$(tput setaf 141)\]\w"
 PS1+="\[$(tput setaf 15)\] on "
 PS1+="\[$(tput setaf 198)\]\$(parse_git_branch)"
@@ -24,6 +30,7 @@ PS1+="\[$(tput setaf 168)\]\t\n"
 PS1+="\[$(tput setaf 15 && tput bold)\]-> "
 
 # Environment variables
+export KWIN_COMPOSE=O2ES
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
 export EDITOR="vim"
@@ -47,6 +54,7 @@ fi
 source "/home/linuxbrew/.linuxbrew/opt/kube-ps1/share/kube-ps1.sh"
 source <(kubectl completion bash)
 source <(awless completion bash)
+source <(helm completion bash)
 
 # Alias
 alias kctl="kubectl"

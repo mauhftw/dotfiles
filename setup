@@ -154,6 +154,13 @@ curl --silent --show-error --location "https://packages.cloud.google.com/apt/doc
 && apt-get update \
 && apt-get install -y kubectl
 
+# Install minikube
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+&& chmod +x minikube \
+&& mv minikube /usr/local/bin
+
+# Install helm
+
 # Install kubetpl
 curl --silent --show-error --location https://github.com/shyiko/kubetpl/releases/download/0.8.0/kubetpl-0.8.0-$( \
 bash -c '[[ $OSTYPE == darwin* ]] && echo darwin || echo linux')-amd64 -o kubetpl \
