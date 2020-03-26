@@ -42,7 +42,7 @@ export INFOPATH="$INFOPATH:/home/mauh/.linuxbrew/share/info"
 export GOPATH=~/go/projects
 export GIT_EDITOR=vim
 export KUBECONFIG=~/.kube/config
-export GITHUB_CHANGELOG_TOKEN="f38d6afaa3dd1c785f1c397b1200c60fe186dadc"
+export GITHUB_CHANGELOG_TOKEN=""
 export KUBE_PS1_SYMBOL_USE_IMG=true
 
 # Source env vars for completion and ps1
@@ -50,6 +50,7 @@ if [ $UID -ne 0 ]; then
   source virtualenvwrapper.sh
   source ~/dotfiles/kctl_completion
 fi
+
 source "/home/mauh/.linuxbrew/opt/kube-ps1/share/kube-ps1.sh"
 source <(kubectl completion bash)
 source <(awless completion bash)
@@ -62,3 +63,8 @@ alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias xclip="xclip -se c"
 alias ..="cd .."
 alias ll='ls -alFh'
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                    # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
