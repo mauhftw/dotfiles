@@ -14,7 +14,7 @@ fi
 #############
 
 readonly USERNAME=$(cat /etc/passwd | grep '1000:1000' | awk -F ':' '{print $1}')
-readonly CUSTOM_BASHRC_PATH="${HOME}/dotfiles"
+readonly CUSTOM_BASHRC_PATH="/home/${USERNAME}/dotfiles"
 readonly CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
 
 ####################################
