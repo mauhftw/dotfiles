@@ -36,14 +36,16 @@ export LANG="en_US"
 export EDITOR="vim"
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.gem/ruby/2.5.0/bin
-export PATH="$PATH:/home/mauh/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/"
-export MANPATH="$MANPATH:/home/mauh/.linuxbrew/share/man"
-export INFOPATH="$INFOPATH:/home/mauh/.linuxbrew/share/info"
+export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/"
+export PATH="$PATH:$HOME/terraform/"
+export MANPATH="$MANPATH:/home/linuxbrew/.linuxbrew/share/man"
+export INFOPATH="$INFOPATH:/home/linuxbrew/.linuxbrew/share/info"
 export GOPATH=~/go/projects
 export GIT_EDITOR=vim
 export KUBECONFIG=~/.kube/config
 export GITHUB_CHANGELOG_TOKEN=""
 export KUBE_PS1_SYMBOL_USE_IMG=true
+export AWS_SDK_LOAD_CONFIG=1
 
 # Source env vars for completion and ps1
 if [ $UID -ne 0 ]; then
@@ -51,7 +53,7 @@ if [ $UID -ne 0 ]; then
   source ~/dotfiles/kctl_completion
 fi
 
-source "/home/mauh/.linuxbrew/opt/kube-ps1/share/kube-ps1.sh"
+source "/home/linuxbrew/.linuxbrew/opt/kube-ps1/share/kube-ps1.sh"
 source <(kubectl completion bash)
 source <(awless completion bash)
 source <(helm completion bash)
@@ -63,6 +65,7 @@ alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias xclip="xclip -se c"
 alias ..="cd .."
 alias ll='ls -alFh'
+alias tfswitch="tfswitch -b $HOME/terraform/terraform"
 
 # nvm
 export NVM_DIR="$HOME/.nvm"

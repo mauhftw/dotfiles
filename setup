@@ -16,6 +16,7 @@ fi
 readonly USERNAME=$(cat /etc/passwd | grep '1000:1000' | awk -F ':' '{print $1}')
 readonly CUSTOM_BASHRC_PATH="/home/${USERNAME}/dotfiles"
 readonly CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+readonly GOPATH="/home/${USERNAME}/go"
 
 ####################################
 # System utilities and dependencies
@@ -55,7 +56,6 @@ apt-get update \
   ruby \
   ruby-dev \
   golang-go
-  docky
 
 ########################
 ## Desktop applications
@@ -70,12 +70,12 @@ wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | apt-key add - \
 # Install slack
 (
   wget https://downloads.slack-edge.com/linux_releases/slack-desktop-3.3.8-amd64.deb -O /tmp/slack.deb
-  apt-get install /tmp/slack.deb
+  apt-get install -y /tmp/slack.deb
 )
 
 # Install zoom
 (
-	cd /tmp \
+  cd /tmp \
   && wget https://zoom.us/client/latest/zoom_amd64.deb -O zoom.deb \
   && dpkg -i zoom.deb || true  \
   && apt-get -fy install
@@ -83,8 +83,8 @@ wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | apt-key add - \
 
 # Install ulauncher
 (
-	ULAUNCHER_RELEASE=$(curl --silent "https://api.github.com/repos/Ulauncher/Ulauncher/releases/latest" | jq .tag_name -r)
-	cd /tmp \
+  ULAUNCHER_RELEASE=$(curl --silent "https://api.github.com/repos/Ulauncher/Ulauncher/releases/latest" | jq .tag_name -r)
+  cd /tmp \
   && wget https://github.com/Ulauncher/Ulauncher/releases/download/${ULAUNCHER_RELEASE}/ulauncher_${ULAUNCHER_RELEASE}_all.deb -O ulauncher.deb \
   && dpkg -i ulauncher.deb || true \
   && apt-get install -fy
@@ -92,8 +92,8 @@ wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | apt-key add - \
 
 # Install etcher
 (
-	ETCHER_RELEASE=$(curl --silent "https://api.github.com/repos/balena-io/etcher/releases/latest" | jq .tag_name -r | tr -d 'v')
-	cd /tmp \
+  ETCHER_RELEASE=$(curl --silent "https://api.github.com/repos/balena-io/etcher/releases/latest" | jq .tag_name -r | tr -d 'v')
+  cd /tmp \
   && wget https://github.com/balena-io/etcher/releases/download/v${ETCHER_RELEASE}/balena-etcher-electron-${ETCHER_RELEASE}-linux-x64.zip -O etcher.zip \
   && unzip etcher.zip \
   && mv balena* /usr/local/bin/etcher
@@ -186,29 +186,19 @@ echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /e
 curl https://raw.githubusercontent.com/wallix/awless/master/getawless.sh | bash \
 && mv awless /usr/local/bin/
 
-# Install brew
-yes "" | curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash 
-
 # Install nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+yes "" | curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 
 # Install diodon clip-manager
-add-apt-repository ppa:diodon-team/stable \
+add-apt-repository -y ppa:diodon-team/stable \
 && apt-get update \
-&& apt-get install diodon unity-scope-diodon
+&& apt-get install -y diodon unity-scope-diodon
 
 # Install spotify
 curl -sS https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add - \
 && echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list \
 && apt-get update \
-&& apt-get install spotify-client
-
-
-###########################
-## Cleaning out everything
-###########################
-
-rm -rf /tmp/*
+&& apt-get install -y spotify-client
 
 #######################################
 ## Checking if you're using plasmashell
@@ -224,13 +214,33 @@ fi
 ##################################
 
 if ! grep -w '.custom_bashrc' /root/.bashrc; then
-  echo "source /home/${USERNAME}/dotfiles/.custom_bashrc >> /root/.bashrc"
+  echo "source /home/${USERNAME}/dotfiles/.custom_bashrc" >> /root/.bashrc
 fi
 
-###########################################
-## Run as $USERNAME user
-###########################################
+##################################
+## Source custom_bashrc as user
+##################################
+
+if ! grep -w '.custom_bashrc' /home/${USERNAME}/.bashrc; then
+  echo "source /home/${USERNAME}/dotfiles/.custom_bashrc" >> /home/${USERNAME}/.bashrc
+fi
+
+########################################
+## Install 3rd party tools as $USERNAME
+########################################
 
 sudo -i -u ${USERNAME} bash << EOF
   source ${CUSTOM_BASHRC_PATH}/non_root_tools.sh
 EOF
+
+###########################
+## Cleaning out everything
+###########################
+
+rm -rf /tmp/*
+
+###########################
+## Move 3rd party GO tools
+###########################
+
+mv ${GOPATH}/bin/* /usr/local/bin

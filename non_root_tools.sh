@@ -11,6 +11,8 @@ fi
 readonly USERNAME=$(cat /etc/passwd | grep '1000:1000' | awk -F ':' '{print $1}')
 readonly GOPATH="${HOME}/go"
 
+# Install brew
+yes "" | curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh | bash
 
 #################################################
 ## Programming languages and dependency managers
@@ -19,21 +21,24 @@ readonly GOPATH="${HOME}/go"
 # Use system's user permissions
 echo 'gem: --user-install' >> ~/.gemrc
 
+# Install kube-ps1, kubectx. kubetail, kubenvs (check installing with brew)
+/home/linuxbrew/.linuxbrew/bin/brew update \
+&& /home/linuxbrew/.linuxbrew/bin/brew install stern kubectx kube-ps1 terraform-docs 
+
 # Create GOPATH dir
 mkdir -p ${GOPATH}/{src,pkg,bin}
 
 # Install dep
-curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh \
-&& mv $GOPATH/bin/dep /usr/local/bin
+curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh 
 
+# Install vegeta
+go get -u github.com/tsenart/vegeta 
 
-# Install kube-ps1, kubectx. kubetail, kubenvs (check installing with brew)
-${HOME}/.linuxbrew/bin/brew update
-${HOME}/.linuxbrew/bin/brew install stern kubectx kube-ps1
+# Install aws-iam-authenticator
+go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator 
 
-# Install terraform-docs
-go get github.com/segmentio/terraform-docs \
-&& mv $GOPATH/bin/terraform-docs /usr/local/bin
+# Install awless
+go get -u github.com/wallix/awless
 
 # Install terraforming, landscape and github_changelog_generator
 gem install \
@@ -41,22 +46,15 @@ gem install \
   terraform_landscape \
   github_changelog_generator
 
-# Install vegeta
-go get -u github.com/tsenart/vegeta \
-&& mv $GOPATH/bin/vegeta /usr/local/bin
-
-# Install aws-iam-authenticator
-go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator \
-&& mv $GOPATH/bin/aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
-
 # Install awscli, ansible, virtualenvwarpper
 pip install \
   awscli \
   ansible \
   virtualenvwrapper \
-&& source virtualenvwrapper.sh
+&& source ${HOME}/.local/bin/virtualenvwrapper.sh
 
 # Copy application settings and source the source .bashrc
 cp ${HOME}/dotfiles/.gitconfig ${HOME}
 cp ${HOME}/dotfiles/.tmux.conf ${HOME}
+
 source /home/${USERNAME}/.bashrc
