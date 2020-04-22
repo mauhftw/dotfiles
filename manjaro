@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Needed for yay (sudo)
-pacman -Sy base-devel libffi --noconfirm
+# Install dependencies
+sudo pacman -Syu base-devel libffi --noconfirm
 #ln -sf /usr/lib/libffi.so.7 /usr/lib/libffi.so.6
 
 # regular user
@@ -10,10 +10,8 @@ cd /tmp \
 && cd yay \
 && makepkg -si
 
-# falta steam, vlc, pcsr, pcsx2, vscode, sublime3
-# Sudo user
-yay -Syu --noconfirm \ 
-&& yay -S  --noconfirm \
+# Install applications
+yay -S  --noconfirm \
     htop \
     xclip \
     nmap \
@@ -47,10 +45,19 @@ yay -Syu --noconfirm \
     stern \
     kube-ps1 \
     nvm \
-    kubectx-git 
+    kubectx-git \
+    sublime-text-3-imfix \
+    visual-studio-code-bin \
+    steam \
+    vlc-git \
+    pcsxr \
+    pcsx2-git 
 
+
+# Add user to docker group
 sudo usermod -aG docker $USER
 
+# Setup preferences on gemrc
 echo 'gem: --user-install' > ~/.gemrc
 
 # Install terraforming, landscape and github_changelog_generator
