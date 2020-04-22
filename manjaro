@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+# Needed for yay (sudo)
+pacman -Sy base-devel libffi --noconfirm
+#ln -sf /usr/lib/libffi.so.7 /usr/lib/libffi.so.6
+
+# regular user
+cd /tmp \
+&& git clone https://aur.archlinux.org/yay.git \
+&& cd yay \
+&& makepkg -si
+
+# falta steam, vlc, pcsr, pcsx2, vscode, sublime3
+# Sudo user
+yay -Syu --noconfirm \ 
+&& yay -S  --noconfirm \
+    htop \
+    xclip \
+    nmap \
+    curl \
+    jq \
+    unzip \
+    git \
+    nmap \
+    tig \
+    tmux \
+    progress \
+    vim \
+    python-pip \
+    ca-certificates \
+    ruby \
+    zoom \
+    ulauncher \
+    balena-etcher \
+    slack-desktop \
+    google-chrome \
+    docker \
+    diodon \
+    docker-compose \
+    spotify \
+    awless \
+    vegeta \
+    aws-cli \
+    python-virtualenvwrapper \
+    terraform-docs-bin \
+    brew-git \
+    stern \
+    kube-ps1 \
+    nvm \
+    kubectx-git 
+
+sudo usermod -aG docker $USER
+
+echo 'gem: --user-install' > ~/.gemrc
+
+# Install terraforming, landscape and github_changelog_generator
+gem install \
+  terraforming \
+  terraform_landscape \
+  github_changelog_generator
+&& source ${HOME}/.local/bin/virtualenvwrapper.sh
+
+# Link application settings and source the source .bashrc
+ln -s ${HOME}/dotfiles/.gitconfig ${HOME}/.gitconfig
+ln -s ${HOME}/dotfiles/.tmux.conf ${HOME}/.tmux.conf
+
+# Source custom_bashrc as root
+if ! grep -w '.custom_bashrc' /root/.bashrc; then
+  sudo echo "source /home/root/dotfiles/.custom_bashrc" >> /root/.bashrc
+fi
+
+# Source custom_bashrc as user
+if ! grep -w '.custom_bashrc' ${HOME}/.bashrc; then
+  echo "source ${HOME}/dotfiles/.custom_bashrc" >> ${HOME}/.bashrc
+fi
+
+# Source bash config
+source /home/${USER}/.bashrc
