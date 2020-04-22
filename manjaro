@@ -2,16 +2,15 @@
 
 # Install dependencies
 sudo pacman -Syu base-devel libffi --noconfirm
-#ln -sf /usr/lib/libffi.so.7 /usr/lib/libffi.so.6
 
-# regular user
+# Install yay
 cd /tmp \
 && git clone https://aur.archlinux.org/yay.git \
 && cd yay \
-&& makepkg -si
+&& makepkg -si --noconfirm
 
 # Install applications
-yay -S  --noconfirm \
+yay -S  --noconfirm --sudoloop \
     htop \
     xclip \
     nmap \
@@ -53,7 +52,7 @@ yay -S  --noconfirm \
     pcsx2-git 
 
 
-# Add user to docker group
+# Add $USER to docker group
 sudo usermod -aG docker $USER
 
 # Setup preferences on gemrc
