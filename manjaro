@@ -41,8 +41,7 @@ yay -S  --noconfirm \
     aws-cli \
     python-virtualenvwrapper \
     terraform-docs-bin \
-    brew-git \
-    stern \
+    stern-bin \
     kube-ps1 \
     nvm \
     kubectx-git \
@@ -64,16 +63,16 @@ echo 'gem: --user-install' > ~/.gemrc
 gem install \
   terraforming \
   terraform_landscape \
-  github_changelog_generator
-&& source ${HOME}/.local/bin/virtualenvwrapper.sh
+  github_changelog_generator \
+&& source virtualenvwrapper.sh
 
 # Link application settings and source the source .bashrc
 ln -s ${HOME}/dotfiles/.gitconfig ${HOME}/.gitconfig
 ln -s ${HOME}/dotfiles/.tmux.conf ${HOME}/.tmux.conf
 
 # Source custom_bashrc as root
-if ! grep -w '.custom_bashrc' /root/.bashrc; then
-  sudo echo "source /home/root/dotfiles/.custom_bashrc" >> /root/.bashrc
+if ! sudo grep -w '.custom_bashrc' /root/.bashrc; then
+  echo "source /home/root/dotfiles/.custom_bashrc" | sudo tee /root/.bashrc
 fi
 
 # Source custom_bashrc as user
@@ -82,4 +81,4 @@ if ! grep -w '.custom_bashrc' ${HOME}/.bashrc; then
 fi
 
 # Source bash config
-source /home/${USER}/.bashrc
+source ${HOME}/.bashrc
