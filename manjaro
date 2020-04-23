@@ -3,7 +3,7 @@
 set -e
 
 # Install dependencies
-sudo pacman -Syu base-devel libffi --noconfirm
+sudo pacman -Syu base-devel libffi pacaur --noconfirm
 
 # Install yay
 cd /tmp \
@@ -12,7 +12,7 @@ cd /tmp \
 && makepkg -si --noconfirm
 
 # Install applications
-yay -S  --noconfirm --sudoloop \
+pacaur -S  --noconfirm --noedit \
     htop \
     pwgen \
     xclip \
@@ -72,7 +72,7 @@ ln -s ${HOME}/dotfiles/.tmux.conf ${HOME}/.tmux.conf
 
 # Source custom_bashrc as root
 if ! sudo grep -w '.custom_bashrc' /root/.bashrc; then
-  echo "source /home/root/dotfiles/.custom_bashrc" | sudo tee /root/.bashrc
+  echo "source ${HOME}/dotfiles/.custom_bashrc" | sudo tee -a /root/.bashrc
 fi
 
 # Source custom_bashrc as user
