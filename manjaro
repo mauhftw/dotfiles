@@ -12,6 +12,7 @@ cd /tmp \
 # Install applications
 yay -S  --noconfirm --sudoloop \
     htop \
+    pwgen \
     xclip \
     nmap \
     curl \
