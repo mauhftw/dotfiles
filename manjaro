@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Install dependencies
 sudo pacman -Syu base-devel libffi --noconfirm
 
@@ -48,10 +50,8 @@ yay -S  --noconfirm --sudoloop \
     sublime-text-3-imfix \
     visual-studio-code-bin \
     steam \
-    vlc-git \
     pcsxr \
     pcsx2-git 
-
 
 # Add $USER to docker group
 sudo usermod -aG docker $USER
