@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Prior running this script you should login into your account
+
+set -e
+
+# Set SSH dir
+SSH_DIR="${HOME}/.ssh"
+
+# Update database
+bw sync
+
+# Get ssh keys from password manager
+while IFS= read -p name notes; do
+    echo $notes > ${SSH_DIR}/${name}
+done < <(bw list items ssh | jq -r '.[] | .name, .notes') 
+    
