@@ -44,6 +44,7 @@ pacaur -S  --noconfirm --noedit \
     sublime-text-3-imfix \
     visual-studio-code-bin \
     steam \
+    bitwarden-cli \
     pcsxr \
     pcsx2-git 
 
