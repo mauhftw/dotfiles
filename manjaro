@@ -61,8 +61,9 @@ gem install \
 && source virtualenvwrapper.sh
 
 # Link application settings and source the source .bashrc
-ln -s ${HOME}/dotfiles/.gitconfig ${HOME}/.gitconfig
-ln -s ${HOME}/dotfiles/.tmux.conf ${HOME}/.tmux.conf
+ln -s ${HOME}/dotfiles/configs/.gitconfig ${HOME}/.gitconfig
+ln -s ${HOME}/dotfiles/configs/.tmux.conf ${HOME}/.tmux.conf
+cp configs/config ${HOME}/.ssh
 
 # Source custom_bashrc as root
 if ! sudo grep -w '.custom_bashrc' /root/.bashrc; then
