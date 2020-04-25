@@ -3,12 +3,20 @@
 set -e
 
 # Install dependencies
-sudo pacman -Syu base-devel libffi pacaur --noconfirm
+sudo pacman -Syu base-devel libffi --noconfirm
+
+# Install yay
+cd /tmp \
+&& git clone https://aur.archlinux.org/yay.git \
+&& cd yay \
+&& makepkg -si --noconfirm
 
 # Install applications
-pacaur -S  --noconfirm --noedit \
+yay -S  --noconfirm --nomakepkgconf \
     htop \
+    xflux \
     pwgen \
+    bash-completion \
     xclip \
     nmap \
     curl \
@@ -41,12 +49,15 @@ pacaur -S  --noconfirm --noedit \
     kube-ps1 \
     nvm \
     kubectx-git \
-    sublime-text-3-imfix \
     visual-studio-code-bin \
     steam \
     bitwarden-cli \
-    pcsxr \
-    pcsx2-git 
+    gnu-netcat \
+    iftop \
+    mtr \
+    pcsx2\
+    sublime-text-3-imfix \
+    pcsxr 
 
 # Add $USER to docker group
 sudo usermod -aG docker $USER
@@ -64,7 +75,7 @@ gem install \
 # Link application settings and source the source .bashrc
 ln -s ${HOME}/dotfiles/configs/.gitconfig ${HOME}/.gitconfig
 ln -s ${HOME}/dotfiles/configs/.tmux.conf ${HOME}/.tmux.conf
-cp configs/config ${HOME}/.ssh
+cp configs/config ${HOME}/.ssh/config
 
 # Source custom_bashrc as root
 if ! sudo grep -w '.custom_bashrc' /root/.bashrc; then
