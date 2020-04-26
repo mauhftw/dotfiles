@@ -15,6 +15,7 @@ cd /tmp \
 yay -S  --noconfirm --nomakepkgconf \
     htop \
     mlocate \
+    throttled \
     unrar \
     dnsutils \
     fluxgui \
@@ -65,6 +66,9 @@ yay -S  --noconfirm --nomakepkgconf \
 
 # Add $USER to docker group
 sudo usermod -aG docker $USER
+
+# Enable throttled fix service
+sudo systemctl enable --now lenovo_fix.service
 
 # Setup preferences on gemrc
 echo 'gem: --user-install' > ~/.gemrc
