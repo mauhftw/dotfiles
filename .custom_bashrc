@@ -42,15 +42,11 @@ export GIT_EDITOR=vim
 export KUBECONFIG=~/.kube/config
 export GITHUB_CHANGELOG_TOKEN=""
 
-# Source env vars for completion and ps1
-if [ $UID -ne 0 ]; then
-  source virtualenvwrapper.sh #not necessary
-  source ~/dotfiles/kctl_completion
-fi
-
 source <(kubectl completion bash)
 source <(awless completion bash)
 source <(helm completion bash)
+source virtualenvwrapper.sh
+source /opt/kube-ps1/kube-ps1.sh
 
 # Alias
 alias kctl="kubectl"

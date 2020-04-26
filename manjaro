@@ -14,7 +14,10 @@ cd /tmp \
 # Install applications
 yay -S  --noconfirm --nomakepkgconf \
     htop \
-    xflux \
+    mlocate \
+    unrar \
+    dnsutils \
+    fluxgui \
     pwgen \
     bash-completion \
     xclip \
@@ -26,6 +29,7 @@ yay -S  --noconfirm --nomakepkgconf \
     nmap \
     tig \
     tmux \
+    mate-sensors-applet \
     progress \
     vim \
     python-pip \
@@ -72,7 +76,13 @@ gem install \
   github_changelog_generator \
 && source virtualenvwrapper.sh
 
-# Link application settings and source the source .bashrc
+# Check if ssh and terraform dirs exists
+if [[ ${HOME}/.ssh ]]; then
+  mkdir ${HOME}/.ssh
+  mkdir ${HOME}/terraform
+fi
+
+# Link application settings and source .bashrc
 ln -s ${HOME}/dotfiles/configs/.gitconfig ${HOME}/.gitconfig
 ln -s ${HOME}/dotfiles/configs/.tmux.conf ${HOME}/.tmux.conf
 cp configs/config ${HOME}/.ssh/config
