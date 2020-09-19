@@ -1,0 +1,11 @@
+[Unit]
+Description=Use xrandr to clone displays using 1080p and external 4K display monitor
+After=graphical.target
+StopWhenUnneeded=yes
+
+[Service]
+RemainAfterExit=yes
+ExecStart=/home/mauh/dotfiles/bin/x1c7/clone-monitors
+
+[Install]
+WantedBy=graphical.target

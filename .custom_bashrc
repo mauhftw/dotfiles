@@ -35,7 +35,8 @@ export LANG="en_US"
 export EDITOR="vim"
 export PATH=$PATH:$HOME/.helmsw/bin
 export PATH=$PATH:$HOME/.local/bin
-export PATH=$PATH:$HOME/.gem/ruby/2.5.0/bin
+export PATH=$PATH:$HOME/.gem/ruby/2.7.0/bin
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export PATH="$PATH:$HOME/terraform/"
 export GOPATH=~/go/projects
 export GIT_EDITOR=vim
@@ -48,8 +49,16 @@ source <(helm completion bash)
 source virtualenvwrapper.sh
 source /opt/kube-ps1/kube-ps1.sh
 
+# NVM
+[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
+source /usr/share/nvm/nvm.sh
+source /usr/share/nvm/bash_completion
+source /usr/share/nvm/install-nvm-exec
+
+
 # Alias
 alias kctl="kubectl"
+complete -F __start_kubectl kctl
 alias kenv="kubens"
 alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias xclip="xclip -se c"

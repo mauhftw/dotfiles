@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+export DISPLAY=:0.0
+export XAUTHORITY=/home/mauh/.Xauthority
+
+xrandr --output eDP1 --scale 1.5x1.5 --mode 1920x1080 

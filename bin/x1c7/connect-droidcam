@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+IP="192.168.0.4"
+PORT="4747"
+
+droidcam-cli $IP $PORT
+
+if echo $? -ne 0; then
+  exit 1
+fi
