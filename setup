@@ -107,6 +107,10 @@ apt-get update \
   cp extra/completions/alacritty.bash /home/${USERNAME}/.bash_completion/alacritty
   chmod ${USERNAME}:${USERNAME}
   echo "source ~/.bash_completion/alacritty" >> ~/.bashrc
+
+  ## Themes
+  mkdir -p /home/${USERNAME}/.config/alacritty/themes
+  git clone https://github.com/alacritty/alacritty-theme /home/${USERNAME}/.config/alacritty/themes
 )
 
 # Install VSCode
@@ -212,8 +216,8 @@ curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/miniku
 ##################################
 ## Source custom_bashrc as user
 ##################################
-if ! grep -w 'config/.custom_bashrc' /home/${USERNAME}/.bashrc; then
-  echo "source /home/${USERNAME}/dotfiles/.custom_bashrc" >> /home/${USERNAME}/.bashrc
+if ! grep -w '.custom_bashrc' /home/${USERNAME}/.bashrc; then
+  echo "source /home/${USERNAME}/dotfiles/config/.custom_bashrc" >> /home/${USERNAME}/.bashrc
 fi
 
 ###########################

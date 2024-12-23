@@ -1,0 +1,39 @@
+[hostname]
+ssh_only = false
+style = 'blue bold'
+
+[terraform]
+format = '[🏎💨 $workspace]($style) '
+
+[aws]
+disabled = false
+symbol = '🅰  '
+style = 'bold bright-yellow'
+
+[kubernetes]
+disabled = false
+
+[time]
+disabled = false
+format = 'at [\[$time\]]($style) '
+
+[line_break]
+disabled = false
+
+[os]
+disabled = false
+
+[os.symbols]
+Ubuntu = "🐧 "
+
+[git_branch]
+symbol = '🌱 '
+style = 'bright-purple bold'
+format = 'on [$symbol\[$branch(:$remote_branch)\]]($style) '
+
+[username]
+style_user = 'purple bold'
+style_root = 'red bold'
+format = '[$user]($style)@'
+disabled = false
+show_always = true
