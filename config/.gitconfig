@@ -1,0 +1,9 @@
+[user]
+	email = mauricio@caylent.com
+	name  = mashimine
+[diff "sopsdiffer"]
+	textconv = sops -d
+[alias]
+  st = status
+  br = branch
+  l = log --graph --decorate --pretty=oneline --abbrev-commit --all

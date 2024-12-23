@@ -1,0 +1,222 @@
+#!/usr/bin/env bash
+
+set -ex
+
+# Checks if script is running as root
+if [ $UID -ne 0 ]; then
+  echo "You must run this script as root..."
+  exit 1
+fi
+
+#############
+## Variables
+#############
+readonly USERNAME=$(grep '1000:1000' /etc/passwd | awk -F ':' '{print $1}')
+
+####################################
+# System utilities and dependencies  
+####################################
+apt-get update \
+&& apt-get install -y \
+  htop \
+  evdi-dkms \
+  gnome-browser-connector \
+  xclip \
+  nmap \
+  curl \
+  jq \
+  unzip \
+  git \
+  nmap \
+  tig \
+  tmux \
+  progress \
+  vim \
+  apt-transport-https \
+  python3 \
+  python-pip \
+  ca-certificates \
+  software-properties-common 
+
+########################
+## Apps
+########################
+
+# Install tfenv
+(
+  cd /tmp
+  git clone --depth=1 https://github.com/tfutils/tfenv.git /home/${USERNAME}/.tfenv
+  echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> /home/${USERNAME}/.bash_profile
+)
+
+# Install AWSCLI
+(
+  cd tmp/
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+  unzip awscliv2.zip
+  ./aws/install
+)
+
+# Install Obsidian
+(
+  OBISIDIAN_RELEASE=$(curl --silent "https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest" | jq .tag_name -r)
+  VERSION=$(echo "$OBISIDIAN_RELEASE" | cut -d 'v' -f2)
+  cd /tmp \
+  && wget https://github.com/obsidianmd/obsidian-releases/releases/download/${OBISIDIAN_RELEASE}/obsidian_${VERSION}_amd64.deb -O obsidian.deb \
+  && dpkg -i obsidian.deb || true \
+  && apt-get install -fy
+)
+
+# Install Alacritty
+(
+  apt install -y
+   cmake \
+   g++ \
+   pkg-config \
+   libfreetype6-dev \
+   libfontconfig1-dev \
+   libxcb-xfixes0-dev \
+   libxkbcommon-dev \
+   cargo \
+   scdoc
+
+  ## Build Alacritty
+  cd tmp/
+  git clone https://github.com/alacritty/alacritty.git
+  cd alacritty/
+  cargo build --release
+  infocmp alacritty
+  tic -xe alacritty,alacritty-direct extra/alacritty.info
+
+  ## Desktop entry
+  cp target/release/alacritty /usr/local/bin # or anywhere else in $PATH
+  cp extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg
+  desktop-file-install extra/linux/Alacritty.desktop
+  update-desktop-database
+
+  ## Man page
+  mkdir -p /usr/local/share/man/man1
+  mkdir -p /usr/local/share/man/man5
+  scdoc < extra/man/alacritty.1.scd | gzip -c | sudo tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null
+  scdoc < extra/man/alacritty-msg.1.scd | gzip -c | sudo tee /usr/local/share/man/man1/alacritty-msg.1.gz > /dev/null
+  scdoc < extra/man/alacritty.5.scd | gzip -c | sudo tee /usr/local/share/man/man5/alacritty.5.gz > /dev/null
+  scdoc < extra/man/alacritty-bindings.5.scd | gzip -c | sudo tee /usr/local/share/man/man5/alacritty-bindings.5.gz > /dev/null
+
+  ## Shell completions
+  mkdir -p /home/${USERNAME}/.bash_completion
+  cp extra/completions/alacritty.bash /home/${USERNAME}/.bash_completion/alacritty
+  chmod ${USERNAME}:${USERNAME}
+  echo "source ~/.bash_completion/alacritty" >> ~/.bashrc
+)
+
+# Install VSCode
+(
+  echo "code code/add-microsoft-repo boolean true" | sudo debconf-set-selections
+  wget https://go.microsoft.com/fwlink/?LinkID=760868 -O /tmp/vscode.deb
+  apt install vscode.deb
+)
+
+# Install slack
+(
+  wget https://downloads.slack-edge.com/linux_releases/slack-desktop-3.3.8-amd64.deb -O /tmp/slack.deb
+  apt-get install -y /tmp/slack.deb
+)
+
+# Install zoom
+(
+  cd /tmp \
+  && wget https://zoom.us/client/latest/zoom_amd64.deb -O zoom.deb \
+  && dpkg -i zoom.deb || true  \
+  && apt-get -fy install
+)
+
+## Install ulauncher
+# (
+#   ULAUNCHER_RELEASE=$(curl --silent "https://api.github.com/repos/Ulauncher/Ulauncher/releases/latest" | jq .tag_name -r)
+#   cd /tmp \
+#   && wget https://github.com/Ulauncher/Ulauncher/releases/download/${ULAUNCHER_RELEASE}/ulauncher_${ULAUNCHER_RELEASE}_all.deb -O ulauncher.deb \
+#   && dpkg -i ulauncher.deb || true \
+#   && apt-get install -fy
+# )
+
+## Install spotify
+# curl -sS https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add - \
+# && echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list \
+# && apt-get update \
+# && apt-get install -y spotify-client
+
+# Install Youtube music
+(
+  sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+  YT_RELEASE=$(curl --silent "https://api.github.com/repos/th-ch/youtube-music/releases/latest" | jq .tag_name -r)
+  VERSION=$(echo "$YT_RELEASE" | cut -d 'v' -f2)
+  cd /tmp \
+  && wget https://github.com/th-ch/youtube-music/releases/download/${YT_RELEASE}/youtube-music_${VERSION}_amd64.deb -O yt.deb \
+  && dpkg -i yt.deb || true \
+  && apt-get install -fy
+)
+
+# Install etcher
+(
+  ETCHER_RELEASE=$(curl --silent "https://api.github.com/repos/balena-io/etcher/releases/latest" | jq .tag_name -r | tr -d 'v')
+  cd /tmp \
+  && wget https://github.com/balena-io/etcher/releases/download/v${ETCHER_RELEASE}/balena-etcher-electron-${ETCHER_RELEASE}-linux-x64.zip -O etcher.zip \
+  && unzip etcher.zip \
+  && mv balena* /usr/local/bin/etcher
+)
+
+# Install google-chrome
+(
+  cd /tmp \
+  && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O chrome.deb \
+  && apt install ./chrome.deb || true \
+  && apt-get install -fy
+)
+
+# Install docker
+apt-get remove \
+  docker \
+  docker-engine \
+  docker.io \
+&& curl --silent --show-error --location "https://download.docker.com/linux/ubuntu/gpg" | apt-key add - \
+&& add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable" \
+&& apt-get update \
+&& apt-get install -y \
+     docker-ce \
+     docker-compose \
+&& usermod -aG docker $USERNAME
+
+# Install kubectl
+curl --silent --show-error --location "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | apt-key add - \
+&& echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list \
+&& apt-get update \
+&& apt-get install -y kubectl
+
+# Install minikube
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+&& chmod +x minikube \
+&& mv minikube /usr/local/bin
+
+# Install helm
+(
+  HELM_RELEASE=$(curl --silent "https://api.github.com/repos/helm/helm/releases/latest" | jq .tag_name -r)
+  cd /tmp \
+  && wget https://get.helm.sh/helm-${HELM_RELEASE}-linux-amd64.tar.gz -O helm.tar.gz \
+  && tar zxf helm.tar.gz \
+  && mv linux-amd64/helm /usr/local/bin
+)
+
+##################################
+## Source custom_bashrc as user
+##################################
+if ! grep -w 'config/.custom_bashrc' /home/${USERNAME}/.bashrc; then
+  echo "source /home/${USERNAME}/dotfiles/.custom_bashrc" >> /home/${USERNAME}/.bashrc
+fi
+
+###########################
+## Clear dependencies
+###########################
+rm -rf /tmp/*

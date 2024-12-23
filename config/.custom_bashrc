@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Environment variables
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US"
+export EDITOR="vim"
+export GIT_EDITOR=vim
+export AWS_SDK_LOAD_CONFIG=1
+
+# Alias
+alias k="kubectl"
+alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias xclip="xclip -se c"
+alias ..="cd .."
+alias ll='ls -alFh'
