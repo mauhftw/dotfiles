@@ -6,6 +6,7 @@ export LANG="en_US"
 export EDITOR="vim"
 export GIT_EDITOR=vim
 export AWS_SDK_LOAD_CONFIG=1
+export TERM=xterm-256color
 
 # Alias
 alias k="kubectl"
@@ -13,3 +14,12 @@ alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias xclip="xclip -se c"
 alias ..="cd .."
 alias ll='ls -alFh'
+
+# Apps
+eval "$(starship init bash)"
+eval "$(pyenv virtualenv-init -)"
+echo 'export PATH="$HOME/.tfenv/bin:$PATH"' >> ~/.bash_profile
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - bash)"
+
