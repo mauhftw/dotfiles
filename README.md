@@ -32,6 +32,7 @@ $ ./setup
 #### Gnome extensions
 * https://extensions.gnome.org/extension/946/panel-world-clock-lite/
 * https://extensions.gnome.org/extension/1634/resource-monitor/
+* https://extensions.gnome.org/extension/5446/quick-settings-tweaker/
 
 #### DisplayLink
 * https://github.com/AdnanHodzic/displaylink-debian
