@@ -8,17 +8,28 @@ export GIT_EDITOR=vim
 export AWS_SDK_LOAD_CONFIG=1
 export TERM=xterm-256color
 export PATH="$HOME/.tfenv/bin:$PATH"
+export SHELL="/opt/homebrew/bin/bash"
+
+# Mac
+export CLICOLOR=1
+alias xclip="pbcopy"
+export GREP_OPTIONS='--color=auto'
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias xclip="pbcopy"
+alias docker="podman"
 
 # Alias
 alias k="kubectl"
 alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias xclip="xclip -se c"
+# alias xclip="xclip -se c"
 alias ..="cd .."
-alias ll='ls -alFh'
+alias ll='ls -alFhG'
 
 # Apps
 eval "$(starship init bash)"
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - bash)"
+# export PYENV_ROOT="$HOME/.pyenv"
+# [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init - bash)"
 

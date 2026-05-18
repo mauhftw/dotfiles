@@ -1,0 +1,211 @@
+#!/bin/bash
+
+set -e
+
+echo "🚀 Starting macOS setup (bash + dotfiles pro setup)..."
+
+########################################
+# Install Homebrew
+########################################
+if ! command -v brew &> /dev/null; then
+  echo "🍺 Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+  echo "✅ Homebrew already installed"
+fi
+
+brew update
+
+########################################
+# CLI tools
+########################################
+echo "🔧 Installing CLI tools..."
+
+brew install \
+  htop \
+  nmap \
+  curl \
+  jq \
+  bash \
+  unzip \
+  git \
+  tig \
+  tmux \
+  vim \
+  pwgen \
+  python \
+  tfenv \
+  awscli \
+  nvm \
+  kubectl \
+  minikube \
+  helm \
+  wget \
+  yq \
+  coreutils \
+  kubectx \
+  stern \
+  sops \
+  bash-completion \
+  alt-tab \
+  maccy \
+  gh \
+  virtualenvwrapper
+  
+
+########################################
+# Atmos
+########################################
+echo "🌬 Installing Atmos..."
+# brew install cloudposse/tap/atmos
+
+########################################
+# Terminal tools
+########################################
+echo "💻 Installing terminal tools..."
+
+brew install --cask alacritty
+git clone https://github.com/alacritty/alacritty-theme /Users/${USER}/.config/alacritty/themes
+
+
+########################################
+# GUI apps
+########################################
+echo "🖥 Installing applications..."
+
+brew install --cask \
+  docker \
+  visual-studio-code \
+  slack \
+  zoom \
+  google-chrome \
+  obsidian \
+  lens \
+  karabiner-elements \
+  whatsapp \
+  discord \
+  yt-music \
+  clocker \
+  stats \
+  mos \
+  linearmouse \
+  rectangle \
+  1password \
+
+## TODO: Manually install stay
+
+########################################
+# Bash config (clean + idempotent)
+########################################
+echo "⚙️ Configuring bash..."
+
+BASH_PROFILE="$HOME/.bash_profile"
+BASHRC="$HOME/.bashrc"
+
+add_if_missing () {
+  grep -qxF "$1" "$2" 2>/dev/null || echo "$1" >> "$2"
+}
+
+# Ensure .bashrc exists
+touch "$BASHRC"
+
+# ===== .bash_profile =====
+
+add_if_missing 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$BASH_PROFILE"
+
+add_if_missing 'export NVM_DIR="$HOME/.nvm"' "$BASH_PROFILE"
+add_if_missing '[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"' "$BASH_PROFILE"
+
+add_if_missing 'export WORKON_HOME=$HOME/.virtualenvs' "$BASH_PROFILE"
+add_if_missing 'export VIRTUALENVWRAPPER_PYTHON=$(which python3)' "$BASH_PROFILE"
+add_if_missing 'source $(brew --prefix)/bin/virtualenvwrapper.sh' "$BASH_PROFILE"
+
+add_if_missing 'export ALACRITTY_CONFIG="$HOME/.alacritty.toml"' "$BASH_PROFILE"
+
+# Load .bashrc (Linux style)
+add_if_missing '[ -f ~/.bashrc ] && source ~/.bashrc' "$BASH_PROFILE"
+
+# ===== .bashrc =====
+
+# bash-completion
+add_if_missing 'if [ -f /opt/homebrew/etc/bash_completion ]; then . /opt/homebrew/etc/bash_completion; fi' "$BASHRC"
+
+# Starship
+add_if_missing 'eval "$(starship init bash)"' "$BASHRC"
+
+# Load custom bashrc
+add_if_missing '[ -f ~/.custom_bashrc ] && source ~/.custom_bashrc' "$BASHRC"
+
+########################################
+# Dotfiles
+########################################
+echo "📁 Setting up dotfiles..."
+
+git config --global url."https://github.com/".insteadOf git@github.com:
+
+DOTFILES_DIR="$HOME/dotfiles"
+
+if [ ! -d "$DOTFILES_DIR" ]; then
+  git clone https://github.com/mauhftw/dotfiles.git "$DOTFILES_DIR"
+else
+  cd "$DOTFILES_DIR" && git pull
+fi
+
+########################################
+# Safe symlink
+########################################
+create_symlink () {
+  src="$1"
+  dest="$2"
+
+  if [ -e "$dest" ] && [ ! -L "$dest" ]; then
+    echo "⚠️ Backing up $dest → $dest.backup"
+    mv "$dest" "$dest.backup"
+  fi
+
+  ln -sf "$src" "$dest"
+}
+
+########################################
+# Symlinks
+########################################
+echo "🔗 Creating symlinks..."
+
+mkdir -p ~/.config
+
+create_symlink "$DOTFILES_DIR/config/.alacritty.toml" "$HOME/.alacritty.toml"
+create_symlink "$DOTFILES_DIR/config/.gitconfig" "$HOME/.gitconfig"
+create_symlink "$DOTFILES_DIR/config/.vimrc" "$HOME/.vimrc"
+create_symlink "$DOTFILES_DIR/config/starship.toml" "$HOME/.config/starship.toml"
+create_symlink "$DOTFILES_DIR/config/.custom_bashrc" "$HOME/.custom_bashrc"
+create_symlink "$DOTFILES_DIR/config/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
+
+########################################
+# Tmux (classic + fallback)
+########################################
+echo "🧩 Setting up tmux config..."
+
+TMUX_TARGET="$HOME/.tmux.conf"
+
+if [ -f "$DOTFILES_DIR/config/.tmux.conf" ]; then
+  create_symlink "$DOTFILES_DIR/config/.tmux.conf" "$TMUX_TARGET"
+elif [ -f "$DOTFILES_DIR/bin/tmux.conf" ]; then
+  cp "$DOTFILES_DIR/bin/tmux.conf" "$TMUX_TARGET"
+fi
+  
+########################################
+# Fix macOS quarantine
+########################################
+echo "🔓 Fixing macOS permissions..."
+
+xattr -dr com.apple.quarantine /Applications/Alacritty.app 2>/dev/null || true
+chsh -s /bin/bash
+########################################
+# Cleanup
+########################################
+brew cleanup
+
+echo "✅ Setup complete!"
+echo "👉 Run: source ~/.bash_profile"

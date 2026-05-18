@@ -25,6 +25,7 @@ disabled = false
 
 [os.symbols]
 Ubuntu = "🐧 "
+Macos = "🐧 "
 
 [git_branch]
 symbol = '🌱 '

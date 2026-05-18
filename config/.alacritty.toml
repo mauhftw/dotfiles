@@ -1,12 +1,12 @@
-import = [
-  "~/.config/alacritty/themes/themes/challenger_deep.toml"
+general.import = [
+  "~/.config/alacritty/themes/themes/dracula.toml"
 ]
 
 [window]
 opacity = 0.9
 
 [font]
-size = 14
+size = 16
 
 [selection]
 save_to_clipboard = true
@@ -17,3 +17,26 @@ multiplier = 3
 
 [env]
 term = "xterm-256color"
+
+[terminal.shell]
+program = "/bin/bash"
+args = ["--login"]
+
+
+[keyboard]
+
+# Make Option behave like Alt (Meta)
+[[keyboard.bindings]]
+key = "Left"
+mods = "Alt"
+chars = "\u001bb"
+
+[[keyboard.bindings]]
+key = "Right"
+mods = "Alt"
+chars = "\u001bf"
+
+[[keyboard.bindings]]
+key = "Back"
+mods = "Alt"
+chars = "\u0017"

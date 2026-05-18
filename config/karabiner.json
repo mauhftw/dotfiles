@@ -1,0 +1,60 @@
+{
+  "profiles": [
+    {
+      "name": "Default profile",
+      "selected": true,
+      "virtual_hid_keyboard": {
+        "keyboard_type_v2": "ansi"
+      },
+      "complex_modifications": {
+        "rules": [
+          {
+            "description": "PrintScreen to macOS screenshot UI",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "print_screen"
+                },
+                "to": [
+                  {
+                    "key_code": "5",
+                    "modifiers": [
+                      "command",
+                      "shift"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Ctrl+Alt/Option+D show desktop (all keyboards)",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "d",
+                  "modifiers": {
+                    "mandatory": [
+                      "control",
+                      "command"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "f11"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
