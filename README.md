@@ -50,4 +50,6 @@ ln -s $HOME/dotfiles/config/.gitconfig $HOME/.gitconfig
 ln -s $HOME/dotfiles/config/.tmux.conf $HOME/.tmux.conf
 ln -s $HOME/dotfiles/config/.vimrc $HOME/.vimrc
 ln -s $HOME/dotfiles/config/starship.toml $HOME/.config/starship.toml 
+ln -s $HOME/dotfiles/config/agents/AGENTS.md $HOME/.claude/CLAUDE.md
+ln -s $HOME/dotfiles/config/agents/AGENTS.md $HOME/.codex/AGENTS.md
 ```

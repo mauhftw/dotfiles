@@ -165,6 +165,17 @@ if ! grep -w '.custom_bashrc' /home/${USERNAME}/.bashrc; then
   echo "source /home/${USERNAME}/dotfiles/config/.custom_bashrc" >> /home/${USERNAME}/.bashrc
 fi
 
+##################################
+## Global agent instructions
+##################################
+for dir in .claude .codex; do
+  mkdir -p /home/${USERNAME}/${dir}
+  chown ${USERNAME}:${USERNAME} /home/${USERNAME}/${dir}
+done
+ln -sfn /home/${USERNAME}/dotfiles/config/agents/AGENTS.md /home/${USERNAME}/.claude/CLAUDE.md
+ln -sfn /home/${USERNAME}/dotfiles/config/agents/AGENTS.md /home/${USERNAME}/.codex/AGENTS.md
+chown -h ${USERNAME}:${USERNAME} /home/${USERNAME}/.claude/CLAUDE.md /home/${USERNAME}/.codex/AGENTS.md
+
 ###########################
 ## Clear dependencies
 ###########################

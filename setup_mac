@@ -180,6 +180,11 @@ create_symlink "$DOTFILES_DIR/config/starship.toml" "$HOME/.config/starship.toml
 create_symlink "$DOTFILES_DIR/config/.custom_bashrc" "$HOME/.custom_bashrc"
 create_symlink "$DOTFILES_DIR/config/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
 
+# Global agent instructions (single source: config/agents/AGENTS.md)
+mkdir -p ~/.claude ~/.codex ~/.config/karabiner
+create_symlink "$DOTFILES_DIR/config/agents/AGENTS.md" "$HOME/.claude/CLAUDE.md"
+create_symlink "$DOTFILES_DIR/config/agents/AGENTS.md" "$HOME/.codex/AGENTS.md"
+
 ########################################
 # Tmux (classic + fallback)
 ########################################
