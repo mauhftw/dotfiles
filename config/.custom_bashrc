@@ -26,6 +26,7 @@ alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 # alias xclip="xclip -se c"
 alias ..="cd .."
 alias ll='ls -alFhG'
+alias c="claude"
 
 echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
 
