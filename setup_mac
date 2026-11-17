@@ -39,6 +39,7 @@ brew install \
   tfenv \
   awscli \
   nvm \
+  podman \
   kubectl \
   minikube \
   helm \
@@ -76,13 +77,12 @@ git clone https://github.com/alacritty/alacritty-theme /Users/${USER}/.config/al
 echo "🖥 Installing applications..."
 
 brew install --cask \
-  docker \
   visual-studio-code \
   slack \
   zoom \
   google-chrome \
   obsidian \
-  lens \
+  freelens \
   karabiner-elements \
   whatsapp \
   discord \
@@ -92,10 +92,8 @@ brew install --cask \
   mos \
   linearmouse \
   rectangle \
-  1password \
-
-## TODO: Manually install stay
-
+  1password
+  
 ########################################
 # Bash config (clean + idempotent)
 ########################################

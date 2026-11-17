@@ -27,6 +27,8 @@ alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias ..="cd .."
 alias ll='ls -alFhG'
 
+echo 'complete -o default -F __start_kubectl k' >> ~/.bashrc
+
 # Apps
 eval "$(starship init bash)"
 # export PYENV_ROOT="$HOME/.pyenv"

@@ -12,6 +12,7 @@ style = 'bold bright-yellow'
 
 [kubernetes]
 disabled = false
+style = 'bold bright-white'
 
 [time]
 disabled = false
